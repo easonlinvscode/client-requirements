@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>網頁專案需求問卷</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --c1: #FF6B35;   /* coral orange */
+    --c2: #FFD166;   /* sunny yellow */
+    --c3: #06D6A0;   /* mint green */
+    --c4: #118AB2;   /* ocean blue */
+    --c5: #EF476F;   /* hot pink */
+    --bg: #FFFBF5;
+    --ink: #1A1A2E;
+    --ink2: #4A4A6A;
+    --radius: 16px;
+    --shadow: 0 4px 24px rgba(26,26,46,0.10);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Decorative BG blobs ── */
+  .bg-blobs {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+  }
+  .blob {
+    position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.18;
+    animation: drift 12s ease-in-out infinite alternate;
+  }
+  .blob1 { width: 500px; height: 500px; background: var(--c1); top: -150px; left: -100px; animation-delay: 0s; }
+  .blob2 { width: 400px; height: 400px; background: var(--c3); bottom: -100px; right: -80px; animation-delay: 3s; }
+  .blob3 { width: 300px; height: 300px; background: var(--c4); top: 40%; left: 50%; animation-delay: 6s; }
+
+  @keyframes drift {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(30px, 20px) scale(1.05); }
+  }
+
+  /* ── Layout ── */
+  .shell {
+    position: relative; z-index: 1;
+    max-width: 760px; margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* ── Header ── */
+  .header { margin-bottom: 40px; }
+  .header-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--ink); color: #fff;
+    font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+    padding: 6px 14px; border-radius: 99px; margin-bottom: 20px;
+  }
+  .badge-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c3); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+  .header h1 {
+    font-family: 'Syne', sans-serif; font-size: clamp(32px, 6vw, 52px);
+    font-weight: 800; line-height: 1.1; color: var(--ink);
+    margin-bottom: 16px;
+  }
+  .header h1 span { color: var(--c1); }
+  .header p { font-size: 16px; color: var(--ink2); line-height: 1.7; max-width: 540px; }
+
+  /* ── Progress ── */
+  .progress-wrap { margin-bottom: 36px; }
+  .progress-top {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px;
+  }
+  .progress-text { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; color: var(--ink2); }
+  .progress-pct { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--c1); }
+  .progress-track {
+    width: 100%; height: 6px; background: rgba(26,26,46,0.10); border-radius: 99px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; border-radius: 99px; width: 0%;
+    background: linear-gradient(90deg, var(--c1), var(--c2));
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* ── Step tabs ── */
+  .step-tabs {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px;
+  }
+  .tab {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 14px; border-radius: 99px;
+    font-size: 12px; font-family: 'Syne', sans-serif; font-weight: 600;
+    border: 2px solid transparent;
+    cursor: pointer; transition: all 0.2s;
+    background: white; color: var(--ink2); border-color: rgba(26,26,46,0.12);
+  }
+  .tab.active { color: white; border-color: transparent; }
+  .tab.done { border-color: transparent; opacity: 0.7; }
+  .tab-num {
+    width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 10px; background: rgba(0,0,0,0.15);
+  }
+  .tab.done .tab-num::after { content: '✓'; }
+
+  /* Section colors */
+  .s0.active,.s0.done { background: var(--c1); }
+  .s1.active,.s1.done { background: var(--c4); }
+  .s2.active,.s2.done { background: var(--c3); color: var(--ink) !important; }
+  .s3.active,.s3.done { background: var(--c2); color: var(--ink) !important; }
+  .s4.active,.s4.done { background: var(--c5); }
+  .s5.active,.s5.done { background: #9B5DE5; }
+  .s6.active,.s6.done { background: #00BBF9; color: var(--ink) !important; }
+
+  /* ── Card ── */
+  .card {
+    background: white; border-radius: 24px; padding: 36px 40px;
+    box-shadow: var(--shadow); border: 1px solid rgba(26,26,46,0.06);
+    display: none; animation: fadeUp 0.35s ease;
+  }
+  .card.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 32px; }
+  .card-icon {
+    width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .card-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; }
+  .card-subtitle { font-size: 13px; color: var(--ink2); margin-top: 3px; }
+
+  /* ── Fields ── */
+  .field { margin-bottom: 24px; }
+  .field-label {
+    display: block; font-size: 14px; font-weight: 500; color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .field-label .must {
+    display: inline-block; background: var(--c1); color: white;
+    font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px;
+    margin-left: 6px; vertical-align: middle;
+  }
+  .field-hint { font-size: 12px; color: var(--ink2); margin-bottom: 8px; }
+
+  input[type="text"], input[type="email"], input[type="url"], input[type="number"],
+  textarea, select {
+    width: 100%; padding: 12px 16px;
+    border: 2px solid rgba(26,26,46,0.12); border-radius: 12px;
+    font-family: 'Noto Sans TC', sans-serif; font-size: 15px; color: var(--ink);
+    background: var(--bg); transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none; appearance: none;
+  }
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--c1); box-shadow: 0 0 0 4px rgba(255,107,53,0.12);
+  }
+  textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234A4A6A' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center;
+    padding-right: 40px; cursor: pointer;
+  }
+
+  /* ── Validation states ── */
+  input.invalid, textarea.invalid, select.invalid {
+    border-color: var(--c5);
+    box-shadow: 0 0 0 4px rgba(239,71,111,0.12);
+  }
+  .checkbox-group.invalid, .radio-group.invalid {
+    outline: 2px dashed var(--c5); outline-offset: 8px; border-radius: 4px;
+  }
+  .step-warning {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(239,71,111,0.08);
+    border: 1px solid rgba(239,71,111,0.3);
+    color: var(--c5); font-size: 13px; font-weight: 500;
+    padding: 10px 14px; border-radius: 10px; margin-top: 20px;
+  }
+
+  .radio-group, .checkbox-group { display: flex; flex-direction: column; gap: 10px; }
+  .radio-opt, .check-opt {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 16px; border: 2px solid rgba(26,26,46,0.10);
+    border-radius: 12px; cursor: pointer; transition: all 0.18s;
+    font-size: 14px; color: var(--ink2);
+  }
+  .radio-opt:hover, .check-opt:hover { border-color: var(--c1); color: var(--ink); background: rgba(255,107,53,0.04); }
+  .radio-opt input, .check-opt input { accent-color: var(--c1); width: 16px; height: 16px; cursor: pointer; }
+  .radio-opt.selected, .check-opt.selected { border-color: var(--c1); background: rgba(255,107,53,0.06); color: var(--ink); }
+
+  /* ── Other input reveal ── */
+  .other-input-wrap {
+    overflow: hidden; max-height: 0; opacity: 0;
+    transition: max-height 0.3s ease, opacity 0.25s ease, margin-top 0.3s ease;
+    margin-top: 0;
+  }
+  .other-input-wrap.show {
+    max-height: 120px; opacity: 1; margin-top: 10px;
+  }
+  .other-input-wrap input[type="text"] {
+    border-color: var(--c1); background: white;
+  }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media(max-width: 560px){ .field-row { grid-template-columns: 1fr; } }
+
+  /* ── Navigation ── */
+  .nav { display: flex; justify-content: space-between; align-items: center; margin-top: 36px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 13px 28px; border-radius: 99px;
+    font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+    cursor: pointer; border: none; transition: all 0.2s; text-decoration: none;
+  }
+  .btn-back {
+    background: transparent; color: var(--ink2);
+    border: 2px solid rgba(26,26,46,0.15);
+  }
+  .btn-back:hover { background: rgba(26,26,46,0.05); }
+  .btn-next {
+    background: var(--ink); color: white;
+    box-shadow: 0 4px 16px rgba(26,26,46,0.25);
+  }
+  .btn-next:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,26,46,0.30); }
+  .btn-submit {
+    background: linear-gradient(135deg, var(--c1), var(--c5));
+    color: white; box-shadow: 0 4px 20px rgba(255,107,53,0.40);
+  }
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(255,107,53,0.50); }
+
+  /* ── Success screen ── */
+  .success-screen {
+    display: none; text-align: center; padding: 60px 20px;
+    background: white; border-radius: 24px; box-shadow: var(--shadow);
+  }
+  .success-screen.show { display: block; animation: fadeUp 0.4s ease; }
+  .success-icon { font-size: 64px; margin-bottom: 24px; }
+  .success-screen h2 { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; margin-bottom: 12px; }
+  .success-screen p { font-size: 16px; color: var(--ink2); line-height: 1.7; max-width: 480px; margin: 0 auto; }
+
+  /* ── Google Form notice ── */
+  .gform-notice {
+    background: linear-gradient(135deg, #e8f5e9, #e3f2fd);
+    border: 1px solid rgba(6,214,160,0.3);
+    border-radius: 14px; padding: 16px 20px;
+    font-size: 13px; color: var(--ink2); line-height: 1.6;
+    margin-bottom: 28px;
+  }
+  .gform-notice strong { color: var(--c4); }
+  .gform-notice code {
+    background: rgba(0,0,0,0.07); border-radius: 4px;
+    padding: 1px 6px; font-size: 12px; font-family: monospace; color: var(--ink);
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-blobs">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+</div>
+
+<div class="shell">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-badge">
+      <div class="badge-dot"></div>
+      接案需求蒐集
+    </div>
+    <h1>您的<span>網站</span><br>需求問卷</h1>
+    <p>請花約 5–10 分鐘填寫以下問題，協助我們精準報價並提供最符合您期待的服務。</p>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-wrap">
+    <div class="progress-top">
+      <span class="progress-text" id="step-label">第 1 步，共 7 步</span>
+      <span class="progress-pct" id="step-pct">14%</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="prog-fill"></div></div>
+  </div>
+
+  <!-- Step tabs -->
+  <div class="step-tabs" id="step-tabs"></div>
+
+  <!-- Google Form notice (shown only on last step) -->
+  <div class="gform-notice" id="gform-notice" style="display:none;">
+    <strong>串接說明：</strong>開啟您的 Google 表單 → 右上角「⋮」→「取得預先填入的連結」，填完後複製 URL 中每個欄位的 <code>entry.XXXXXXX</code>，替換程式碼中對應的 entry ID 即可自動送出。
+  </div>
+
+  <!-- ── STEP 1: 基本資訊 ── -->
+  <div class="card active" id="card-0">
+    <div class="card-header">
+      <div class="card-icon" style="background:#FFF0EA;">📋</div>
+      <div>
+        <div class="card-title">基本資訊</div>
+        <div class="card-subtitle">讓我們認識您和這個專案</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">公司 / 品牌名稱 <span class="must">必填</span></label>
+      <input type="text" id="f_company" placeholder="例：小明設計工作室">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label">聯絡人姓名 <span class="must">必填</span></label>
+        <input type="text" id="f_contact" placeholder="您的稱呼">
+      </div>
+      <div class="field">
+        <label class="field-label">聯絡 Email <span class="must">必填</span></label>
+        <input type="email" id="f_email" placeholder="email@example.com">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label">聯絡人電話 <span class="must">必填</span></label>
+        <input type="text" id="f_phone" placeholder="例：0912-345-678">
+      </div>
+      <div class="field">
+        <label class="field-label">聯絡人 LINE ID</label>
+        <input type="text" id="f_lineid" placeholder="例：@yourlineid">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label">預計上線時間 <span class="must">必填</span></label>
+        <input type="text" id="f_deadline" placeholder="例：2025 年 8 月底前">
+      </div>
+      <div class="field">
+        <label class="field-label">預算範圍（開發費）<span class="must">必填</span></label>
+        <select id="f_budget">
+          <option value="">請選擇</option>
+          <option>NT$30,000 以下</option>
+          <option>NT$30,000 – 60,000</option>
+          <option>NT$60,000 – 120,000</option>
+          <option>NT$120,000 – 300,000</option>
+          <option>NT$300,000 以上</option>
+          <option>尚未確定</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">現有網站網址</label>
+      <div class="field-hint">若無，請留空</div>
+      <input type="url" id="f_existing" placeholder="https://...">
+    </div>
+    <div class="field">
+      <label class="field-label">最終決策者是誰？審核幾個層級？</label>
+      <input type="text" id="f_decision" placeholder="例：老闆一人決定 / 行銷主管 → 總經理兩層審核">
+    </div>
+
+    <div class="nav">
+      <span></span>
+      <button class="btn btn-next" onclick="goNext(0)">下一步 →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 2: 專案目標 ── -->
+  <div class="card" id="card-1">
+    <div class="card-header">
+      <div class="card-icon" style="background:#E3F2FD;">🎯</div>
+      <div>
+        <div class="card-title">專案目標</div>
+        <div class="card-subtitle">清楚的目標才能做出對的設計</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">這個網站要解決什麼問題？<span class="must">必填</span></label>
+      <textarea id="f_problem" placeholder="例：讓客戶能線上預約服務，減少電話詢問量…"></textarea>
+    </div>
+    <div class="field">
+      <label class="field-label">主要目標受眾是誰？<span class="must">必填</span></label>
+      <div class="field-hint">年齡、職業、使用裝置、習慣等</div>
+      <textarea id="f_audience" placeholder="例：30–45 歲的中小企業主，主要用手機瀏覽…"></textarea>
+    </div>
+    <div class="field">
+      <label class="field-label">風格參考網站（請列出 1–3 個喜歡的網站）</label>
+      <textarea id="f_style_ref" placeholder="網址 + 喜歡的原因" style="min-height:80px;"></textarea>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-back" onclick="goBack(1)">← 上一步</button>
+      <button class="btn btn-next" onclick="goNext(1)">下一步 →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: 功能需求 ── -->
+  <div class="card" id="card-2">
+    <div class="card-header">
+      <div class="card-icon" style="background:#E8F5E9;">⚙️</div>
+      <div>
+        <div class="card-title">功能需求</div>
+        <div class="card-subtitle">勾選所有需要的功能</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">需要哪些頁面？<span class="must">必填</span></label>
+      <div class="checkbox-group" id="pages-group">
+        <label class="check-opt"><input type="checkbox" name="pages" value="首頁"> 首頁</label>
+        <label class="check-opt"><input type="checkbox" name="pages" value="關於我們"> 關於我們</label>
+        <label class="check-opt"><input type="checkbox" name="pages" value="服務 / 產品介紹"> 服務 / 產品介紹</label>
+        <label class="check-opt"><input type="checkbox" name="pages" value="作品集 / 案例"> 作品集 / 案例</label>
+        <label class="check-opt"><input type="checkbox" name="pages" value="部落格 / 新聞"> 部落格 / 新聞</label>
+        <label class="check-opt"><input type="checkbox" name="pages" value="聯絡我們"> 聯絡我們</label>
+        <label class="check-opt" id="pages-other-opt"><input type="checkbox" name="pages" value="其他" id="pages-other-chk" onchange="toggleOther(this,'pages-other-input')"> 其他</label>
+      </div>
+      <div class="other-input-wrap" id="pages-other-input">
+        <input type="text" id="f_pages_other" placeholder="請說明其他需要的頁面…">
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">需要哪些特殊功能？</label>
+      <div class="checkbox-group">
+        <label class="check-opt"><input type="checkbox" name="features" value="後台管理系統（CMS）"> 後台管理系統（CMS）</label>
+        <label class="check-opt"><input type="checkbox" name="features" value="聯絡表單"> 聯絡表單</label>
+        <label class="check-opt"><input type="checkbox" name="features" value="電子商務 / 金流"> 電子商務 / 金流</label>
+        <label class="check-opt"><input type="checkbox" name="features" value="會員系統 / 登入"> 會員系統 / 登入</label>
+        <label class="check-opt"><input type="checkbox" name="features" value="多語言支援"> 多語言支援</label>
+        <label class="check-opt"><input type="checkbox" name="features" value="線上預約系統"> 線上預約系統</label>
+        <label class="check-opt"><input type="checkbox" name="features" value="Google Analytics 串接"> Google Analytics 串接</label>
+        <label class="check-opt"><input type="checkbox" name="features" value="LINE / FB Pixel 串接"> LINE / FB Pixel 串接</label>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">其他功能需求或補充說明</label>
+      <textarea id="f_features_other" placeholder="例：需要 Google 地圖嵌入、直播功能…" style="min-height:80px;"></textarea>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-back" onclick="goBack(2)">← 上一步</button>
+      <button class="btn btn-next" onclick="goNext(2)">下一步 →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 4: 內容與素材 ── -->
+  <div class="card" id="card-3">
+    <div class="card-header">
+      <div class="card-icon" style="background:#FFFDE7;">🎨</div>
+      <div>
+        <div class="card-title">內容與素材</div>
+        <div class="card-subtitle">確認誰提供哪些東西</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">文案由誰撰寫？<span class="must">必填</span></label>
+      <div class="radio-group">
+        <label class="radio-opt"><input type="radio" name="copy" value="客戶自行提供"> 客戶自行提供</label>
+        <label class="radio-opt"><input type="radio" name="copy" value="需要代為撰寫（需另計費）"> 需要代為撰寫（需另計費）</label>
+        <label class="radio-opt"><input type="radio" name="copy" value="部分自提、部分代寫"> 部分自提、部分代寫</label>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">圖片 / 影片由誰提供？<span class="must">必填</span></label>
+      <div class="radio-group">
+        <label class="radio-opt"><input type="radio" name="media" value="客戶自行提供"> 客戶自行提供</label>
+        <label class="radio-opt"><input type="radio" name="media" value="需要購買圖庫（費用另計）"> 需要購買圖庫（費用另計）</label>
+        <label class="radio-opt"><input type="radio" name="media" value="需要安排攝影（費用另計）"> 需要安排攝影（費用另計）</label>
+        <label class="radio-opt"><input type="radio" name="media" value="尚未確定"> 尚未確定</label>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">品牌識別是否已確定？<span class="must">必填</span></label>
+      <div class="radio-group">
+        <label class="radio-opt"><input type="radio" name="brand" value="已有 Logo + 品牌色 + 字型"> 已有 Logo + 品牌色 + 字型</label>
+        <label class="radio-opt"><input type="radio" name="brand" value="有 Logo，但尚無完整品牌規範"> 有 Logo，但尚無完整品牌規範</label>
+        <label class="radio-opt"><input type="radio" name="brand" value="需要從零設計（需另計費）"> 需要從零設計（需另計費）</label>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">預計何時能提供所有素材？</label>
+      <input type="text" id="f_asset_date" placeholder="例：合約簽訂後 2 週內">
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-back" onclick="goBack(3)">← 上一步</button>
+      <button class="btn btn-next" onclick="goNext(3)">下一步 →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 5: 技術規格 ── -->
+  <div class="card" id="card-4">
+    <div class="card-header">
+      <div class="card-icon" style="background:#FCE4EC;">🔧</div>
+      <div>
+        <div class="card-title">技術規格</div>
+        <div class="card-subtitle">技術細節決定開發範圍</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">域名（Domain）狀態<span class="must">必填</span></label>
+      <div class="radio-group">
+        <label class="radio-opt"><input type="radio" name="domain" value="已購買，由客戶管理"> 已購買，由客戶管理</label>
+        <label class="radio-opt"><input type="radio" name="domain" value="已購買，請開發者協助"> 已購買，請開發者協助</label>
+        <label class="radio-opt"><input type="radio" name="domain" value="尚未購買，請推薦"> 尚未購買，請推薦</label>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">主機 / 雲端偏好<span class="must">必填</span></label>
+      <div class="radio-group">
+        <label class="radio-opt"><input type="radio" name="hosting" value="指定廠商" onchange="toggleOther(this,'hosting-other-input')"> 指定廠商</label>
+        <div class="other-input-wrap" id="hosting-other-input">
+          <input type="text" id="f_hosting_other" placeholder="請填寫指定廠商名稱…">
+        </div>
+        <label class="radio-opt"><input type="radio" name="hosting" value="客戶已有主機" onchange="hideOther('hosting-other-input')"> 客戶已有主機</label>
+        <label class="radio-opt"><input type="radio" name="hosting" value="由開發者決定即可" onchange="hideOther('hosting-other-input')"> 由開發者決定即可</label>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">其他技術需求</label>
+      <div class="checkbox-group">
+        <label class="check-opt"><input type="checkbox" name="tech" value="SEO 基礎優化"> SEO 基礎優化</label>
+        <label class="check-opt"><input type="checkbox" name="tech" value="RWD（手機、平板、桌機）"> RWD（手機、平板、桌機）</label>
+        <label class="check-opt"><input type="checkbox" name="tech" value="SSL 憑證（https）"> SSL 憑證（https）</label>
+        <label class="check-opt"><input type="checkbox" name="tech" value="網站速度優化"> 網站速度優化</label>
+        <label class="check-opt"><input type="checkbox" name="tech" value="舊版 IE 瀏覽器相容"> 舊版 IE 瀏覽器相容</label>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">其他技術說明</label>
+      <textarea id="f_tech_other" placeholder="指定主機商名稱、特殊技術需求…" style="min-height:80px;"></textarea>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-back" onclick="goBack(4)">← 上一步</button>
+      <button class="btn btn-next" onclick="goNext(4)">下一步 →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 6: 合約條款 ── -->
+  <div class="card" id="card-5">
+    <div class="card-header">
+      <div class="card-icon" style="background:#EDE7F6;">📄</div>
+      <div>
+        <div class="card-title">合約與授權</div>
+        <div class="card-subtitle">提前對齊，避免後續糾紛</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">付款方式偏好<span class="must">必填</span></label>
+      <div class="radio-group">
+        <label class="radio-opt"><input type="radio" name="payment" value="里程碑分期（例：簽約30%、交稿40%、驗收30%）" onchange="hideOther('payment-other-input')"> 里程碑分期（例：簽約30%、交稿40%、驗收30%）</label>
+        <label class="radio-opt"><input type="radio" name="payment" value="完成後一次付清" onchange="hideOther('payment-other-input')"> 完成後一次付清</label>
+        <label class="radio-opt"><input type="radio" name="payment" value="其他方式" onchange="toggleOther(this,'payment-other-input')"> 其他方式</label>
+        <div class="other-input-wrap" id="payment-other-input">
+          <input type="text" id="f_payment_other" placeholder="請說明付款方式…">
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">著作權歸屬<span class="must">必填</span></label>
+      <div class="radio-group">
+        <label class="radio-opt"><input type="radio" name="copyright" value="全部移轉給客戶"> 全部移轉給客戶</label>
+        <label class="radio-opt"><input type="radio" name="copyright" value="開發者保留程式著作權，授權客戶使用"> 開發者保留程式著作權，授權客戶使用</label>
+        <label class="radio-opt"><input type="radio" name="copyright" value="待合約細節討論"> 待合約細節討論</label>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">修改次數上限<span class="must">必填</span></label>
+      <input type="text" id="f_revisions" placeholder="例：設計稿 2 次、完稿後 1 次">
+    </div>
+    <div class="field">
+      <label class="field-label">上線後保固期</label>
+      <select id="f_warranty">
+        <option value="">請選擇</option>
+        <option>1 個月</option>
+        <option>3 個月</option>
+        <option>6 個月</option>
+        <option>1 年</option>
+        <option>依需求另報</option>
+      </select>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-back" onclick="goBack(5)">← 上一步</button>
+      <button class="btn btn-next" onclick="goNext(5)">下一步 →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 7: 維護 & 送出 ── -->
+  <div class="card" id="card-6">
+    <div class="card-header">
+      <div class="card-icon" style="background:#E1F5FE;">🚀</div>
+      <div>
+        <div class="card-title">後續維護 & 補充</div>
+        <div class="card-subtitle">最後一步，即將完成！</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">上線後誰負責內容更新？</label>
+      <div class="radio-group">
+        <label class="radio-opt"><input type="radio" name="maintain" value="客戶自行更新"> 客戶自行更新</label>
+        <label class="radio-opt"><input type="radio" name="maintain" value="委託開發者維護（月費另計）"> 委託開發者維護（月費另計）</label>
+        <label class="radio-opt"><input type="radio" name="maintain" value="尚未確定"> 尚未確定</label>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">是否需要長期維護合約？</label>
+      <div class="radio-group">
+        <label class="radio-opt"><input type="radio" name="contract" value="是，希望有月費維護方案"> 是，希望有月費維護方案</label>
+        <label class="radio-opt"><input type="radio" name="contract" value="否，有需要再聯絡"> 否，有需要再聯絡</label>
+        <label class="radio-opt"><input type="radio" name="contract" value="尚未確定"> 尚未確定</label>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">未來是否有擴充計畫？</label>
+      <textarea id="f_future" placeholder="例：半年後希望加入電商功能、開子品牌網站…" style="min-height:80px;"></textarea>
+    </div>
+    <div class="field">
+      <label class="field-label">其他想補充的事項</label>
+      <textarea id="f_remarks" placeholder="任何其他需求、疑問或想說的話…" style="min-height:80px;"></textarea>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn-back" onclick="goBack(6)">← 上一步</button>
+      <button class="btn btn-submit" onclick="submitForm()">送出問卷 ✦</button>
+    </div>
+  </div>
+
+  <!-- Success -->
+  <div class="success-screen" id="success">
+    <div class="success-icon">🎉</div>
+    <h2>感謝您填寫問卷！</h2>
+    <p>我們已收到您的需求資料，將在 <strong>1–2 個工作天內</strong>與您聯繫，提供初步報價及後續洽談時間。</p>
+  </div>
+
+</div><!-- /shell -->
+
+<script src="app.js"></script>
+</body>
+</html>
