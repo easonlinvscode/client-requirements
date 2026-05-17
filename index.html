@@ -159,9 +159,10 @@
   textarea, select {
     width: 100%; padding: 12px 16px;
     border: 2px solid rgba(26,26,46,0.12); border-radius: 12px;
-    font-family: 'Noto Sans TC', sans-serif; font-size: 15px; color: var(--ink);
+    font-family: 'Noto Sans TC', sans-serif; font-size: 16px; color: var(--ink);
     background: var(--bg); transition: border-color 0.2s, box-shadow 0.2s;
     outline: none; appearance: none;
+    /* iOS Safari 在 input 字級 < 16px 時會自動放大畫面，固定 16px 可避免此行為 */
   }
   input:focus, textarea:focus, select:focus {
     border-color: var(--c1); box-shadow: 0 0 0 4px rgba(255,107,53,0.12);
