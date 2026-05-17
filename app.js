@@ -181,7 +181,6 @@ function updateUI() {
   document.getElementById('prog-fill').style.width = pct + '%';
   document.getElementById('step-label').textContent = `第 ${current + 1} 步，共 ${total} 步`;
   document.getElementById('step-pct').textContent = pct + '%';
-  document.getElementById('gform-notice').style.display = current === 6 ? 'block' : 'none';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -301,7 +300,6 @@ function submitForm() {
   document.querySelectorAll('.card').forEach(c => c.style.display = 'none');
   document.getElementById('step-tabs').style.display = 'none';
   document.querySelector('.progress-wrap').style.display = 'none';
-  document.getElementById('gform-notice').style.display = 'none';
   document.getElementById('success').classList.add('show');
 }
 
